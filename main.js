@@ -10,4 +10,4 @@ const timer = setInterval(() => {
      emergente
      emergente = true  
     }  
-}, 100);
+},);
