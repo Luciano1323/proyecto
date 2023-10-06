@@ -1,3 +1,4 @@
+function calcularIVA() {
 let precio;
 
 while (true) {
@@ -21,3 +22,5 @@ alert(
     2
   )}\nPrecio Total: $${precioTotal.toFixed(2)}`
 );
+}
+document.addEventListener("DOMContentLoaded", calcularIVA);
