@@ -1,56 +1,64 @@
 document.addEventListener("DOMContentLoaded", function() {
-  const calculateButton = document.getElementById("calculateButton");
-  const priceInput = document.getElementById("price");
-  const priceDisplay = document.getElementById("priceDisplay");
-  const resultsContainer = document.getElementById("results");
-  const resetButton = document.getElementById("resetButton");
-  const sumButton = document.getElementById("sumButton");
-  const tasaIVA = 0.21;
-  let total = 0;
-  const maxResults = 10;
-  const results = [];
+    const calculateButton = document.getElementById("calculateButton");
+    const priceInput = document.getElementById("price");
+    const priceDisplay = document.getElementById("priceDisplay");
+    const resultValue = document.getElementById("resultValue");
+    const results = document.getElementById("results");
+    const resetButton = document.getElementById("resetButton");
+    const sumButton = document.getElementById("sumButton");
+    const historyButton = document.getElementById("historyButton");
+    const tasaIVA = 0.21;
+    let total = 0;
+    const maxResults = 10;
+    const resultsArray = [];
 
-  calculateButton.addEventListener("click", function() {
-      const precio = parseFloat(priceInput.value);
+    calculateButton.addEventListener("click", function() {
+        const precio = parseFloat(priceInput.value);
 
-      if (isNaN(precio)) {
-          alert("Ingrese un precio válido.");
-      } else {
-          const montoIVA = precio * tasaIVA;
-          const precioTotal = precio + montoIVA;
+        if (isNaN(precio)) {
+            alert("Ingrese un precio válido.");
+        } else {
+            const montoIVA = precio * tasaIVA;
+            const precioTotal = precio + montoIVA;
 
-          const resultText = `IVA (21%): $${montoIVA.toFixed(2)}\nPrecio Total: $${precioTotal.toFixed(2)}`;
+            const resultText = `IVA (21%): $${montoIVA.toFixed(2)}\nPrecio Total: $${precioTotal.toFixed(2)}`;
 
-          results.push(resultText);
+            resultsArray.push(resultText);
 
-          if (results.length > maxResults) {
-              results.shift();
-          }
+            if (resultsArray.length > maxResults) {
+                resultsArray.shift();
+            }
 
-          updateResults();
+            resultValue.textContent = resultText;
 
-          priceDisplay.style.display = "block";
-          document.getElementById("userPriceValue").textContent = `$${precio.toFixed(2)}`;
+            priceDisplay.style.display = "block";
+            document.getElementById("userPriceValue").textContent = `$${precio.toFixed(2)}`;
 
-          total += precioTotal;
-          priceInput.value = "";
-      }
-  });
+            total += precioTotal;
+            priceInput.value = "";
+        }
+    });
 
-  resetButton.addEventListener("click", function() {
-      results.length = 0;
-      total = 0;
-      updateResults();
-      priceDisplay.style.display = "none";
-  });
+    resetButton.addEventListener("click", function() {
+        resultValue.textContent = '';
+        total = 0;
+    });
 
-  sumButton.addEventListener("click", function() {
-      alert(`Precio Total de Todos los Resultados: $${total.toFixed(2)}`);
-  });
+    sumButton.addEventListener("click", function() {
+        alert(`Precio Total de Todos los Resultados: $${total.toFixed(2)}`);
+    });
 
-  function updateResults() {
-      resultsContainer.innerHTML = results.map((result, index) => {
-          return `<p>Resultado ${index + 1}:\n${result}</p>`;
-      }).join('');
-  }
+    historyButton.addEventListener("click", function() {
+        showHistory();
+    });
+
+    function showHistory() {
+        const historyText = resultsArray.join('\n\n');
+        if (historyText.trim() === "") {
+            alert("Historial de Resultados vacío.");
+        } else {
+            alert(`Historial de Resultados:\n\n${historyText}`);
+        }
+    }
 });
+
