@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 
   resetButton.addEventListener("click", function() {
-      results.length = 0; // Elimina todos los resultados
+      results.length = 0;
       total = 0;
       updateResults();
       priceDisplay.style.display = "none";
