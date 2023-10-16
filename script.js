@@ -21,15 +21,20 @@ document.addEventListener("DOMContentLoaded", function() {
             const montoIVA = precio * tasaIVA;
             const precioTotal = precio + montoIVA;
 
-            const resultText = `IVA (21%): $${montoIVA.toFixed(2)}\nPrecio Total: $${precioTotal.toFixed(2)}`;
+            
+            const resultado = {
+                precio: precio,
+                iva: montoIVA,
+                total: precioTotal
+            };
 
-            resultsArray.push(resultText);
+            resultsArray.push(resultado);
 
             if (resultsArray.length > maxResults) {
                 resultsArray.shift();
             }
 
-            resultValue.textContent = resultText;
+            resultValue.textContent = `IVA (21%): $${montoIVA.toFixed(2)}\nPrecio Total: $${precioTotal.toFixed(2)}`;
 
             priceDisplay.style.display = "block";
             document.getElementById("userPriceValue").textContent = `$${precio.toFixed(2)}`;
@@ -53,12 +58,13 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     function showHistory() {
-        const historyText = resultsArray.join('\n\n');
-        if (historyText.trim() === "") {
+        if (resultsArray.length === 0) {
             alert("Historial de Resultados vacío.");
         } else {
+            const historyText = resultsArray.map((resultado, index) => {
+                return `Resultado ${index + 1}:\nPrecio: $${resultado.precio.toFixed(2)}\nIVA (21%): $${resultado.iva.toFixed(2)}\nPrecio Total: $${resultado.total.toFixed(2)}`;
+            }).join('\n\n');
             alert(`Historial de Resultados:\n\n${historyText}`);
         }
     }
 });
-
