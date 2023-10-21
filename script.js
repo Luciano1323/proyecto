@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const historyButton = document.getElementById("historyButton");
     const tasaIVA = 0.21;
     let total = 0;
-    const maxResults = 10;
+    const maxResults = 20;
     const resultsArray = [];
 
     calculateButton.addEventListener("click", function() {
