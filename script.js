@@ -2,11 +2,18 @@ document.addEventListener("DOMContentLoaded", function() {
     const calculateButton = document.getElementById("calculateButton");
     const priceInput = document.getElementById("price");
     const priceDisplay = document.getElementById("priceDisplay");
+    const userPriceValue = document.getElementById("userPriceValue");
     const resultValue = document.getElementById("resultValue");
-    const results = document.getElementById("results");
     const resetButton = document.getElementById("resetButton");
     const sumButton = document.getElementById("sumButton");
     const historyButton = document.getElementById("historyButton");
+    const alertOverlay = document.getElementById("alertOverlay");
+    const alertPopup = document.getElementById("alertPopup");
+    const validValueButton = document.getElementById("validValueButton");
+    const historyOverlay = document.getElementById("historyOverlay");
+    const historyPopup = document.getElementById("historyPopup");
+    const closeHistoryButton = document.getElementById("closeHistoryButton");
+    const historyTextContainer = document.getElementById("historyText");
     const tasaIVA = 0.21;
     let total = 0;
     const maxResults = 20;
@@ -16,12 +23,11 @@ document.addEventListener("DOMContentLoaded", function() {
         const precio = parseFloat(priceInput.value);
 
         if (isNaN(precio)) {
-            alert("Ingrese un precio válido.");
+            showAlert("Ingrese un precio válido.");
         } else {
             const montoIVA = precio * tasaIVA;
             const precioTotal = precio + montoIVA;
 
-            
             const resultado = {
                 precio: precio,
                 iva: montoIVA,
@@ -35,9 +41,9 @@ document.addEventListener("DOMContentLoaded", function() {
             }
 
             resultValue.textContent = `IVA (21%): $${montoIVA.toFixed(2)}\nPrecio Total: $${precioTotal.toFixed(2)}`;
+            userPriceValue.textContent = `$${precio.toFixed(2)}`;
 
-            priceDisplay.style.display = "block";
-            document.getElementById("userPriceValue").textContent = `$${precio.toFixed(2)}`;
+            showPopup(priceDisplay);
 
             total += precioTotal;
             priceInput.value = "";
@@ -50,21 +56,54 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     sumButton.addEventListener("click", function() {
-        alert(`Precio Total de Todos los Resultados: $${total.toFixed(2)}`);
+        showAlert(`Precio Total de Todos los Resultados: $${total.toFixed(2)}`);
     });
 
     historyButton.addEventListener("click", function() {
         showHistory();
     });
 
+    validValueButton.addEventListener("click", function() {
+        hideOverlay(alertOverlay);
+    });
+
+    closeHistoryButton.addEventListener("click", function() {
+        hideOverlay(historyOverlay);
+    });
+
     function showHistory() {
         if (resultsArray.length === 0) {
-            alert("Historial de Resultados vacío.");
+            showAlert("Historial de Resultados vacío.");
         } else {
             const historyText = resultsArray.map((resultado, index) => {
                 return `Resultado ${index + 1}:\nPrecio: $${resultado.precio.toFixed(2)}\nIVA (21%): $${resultado.iva.toFixed(2)}\nPrecio Total: $${resultado.total.toFixed(2)}`;
             }).join('\n\n');
-            alert(`Historial de Resultados:\n\n${historyText}`);
+            historyTextContainer.innerHTML = historyText;
+            showOverlay(historyOverlay, historyPopup);
         }
+    }
+
+    function showAlert(message) {
+        document.getElementById("alertText").textContent = message;
+        showOverlay(alertOverlay, alertPopup);
+
+        setTimeout(() => {
+            hideOverlay(alertOverlay);
+        }, 3000);
+    }
+
+    function showPopup(popup) {
+        popup.style.display = "block";
+    }
+
+    function showOverlay(overlay, popup) {
+        overlay.style.display = "flex";
+        if (popup) {
+            popup.style.display = "block";
+        }
+    }
+
+    function hideOverlay(overlay) {
+        overlay.style.display = "none";
     }
 });
