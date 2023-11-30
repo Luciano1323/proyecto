@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const resetButton = document.getElementById("resetButton");
     const sumButton = document.getElementById("sumButton");
     const historyButton = document.getElementById("historyButton");
+    const customResultsButton = document.getElementById("customResultsButton");
     const alertOverlay = document.getElementById("alertOverlay");
     const alertPopup = document.getElementById("alertPopup");
     const validValueButton = document.getElementById("validValueButton");
@@ -14,6 +15,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const historyPopup = document.getElementById("historyPopup");
     const closeHistoryButton = document.getElementById("closeHistoryButton");
     const historyTextContainer = document.getElementById("historyText");
+    const customResultsOverlay = document.getElementById("customResultsOverlay");
+    const customResultsPopup = document.getElementById("customResultsPopup");
+    const customResultsText = document.getElementById("customResultsText");
+    const closeCustomResultsButton = document.getElementById("closeCustomResultsButton");
     const tasaIVA = 0.21;
     let total = 0;
     const maxResults = 20;
@@ -40,7 +45,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 resultsArray.shift();
             }
 
-         
             saveResultsToStorage();
 
             resultValue.textContent = `IVA (21%): $${montoIVA.toFixed(2)}\nPrecio Total: $${precioTotal.toFixed(2)}`;
@@ -63,8 +67,12 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     historyButton.addEventListener("click", function () {
-        resultsArray = loadResultsFromStorage(); 
+        resultsArray = loadResultsFromStorage();
         showHistory();
+    });
+
+    customResultsButton.addEventListener("click", function () {
+        showCustomResultsList();
     });
 
     validValueButton.addEventListener("click", function () {
@@ -75,15 +83,52 @@ document.addEventListener("DOMContentLoaded", function () {
         hideOverlay(historyOverlay);
     });
 
+    closeCustomResultsButton.addEventListener("click", function () {
+        hideOverlay(customResultsOverlay);
+    });
+
     function showHistory() {
         if (resultsArray.length === 0) {
             showAlert("Historial de Resultados vacío.");
         } else {
             const historyText = resultsArray.map((resultado, index) => {
-                return `Resultado ${index + 1}:<br>Precio: $${resultado.precio.toFixed(2)}<br>IVA (21%): $${resultado.iva.toFixed(2)}<br>Precio Total: $${resultado.total.toFixed(2)}`;
-            }).join('<br><br>');
+                return `Resultado ${index + 1}:\nPrecio: $${resultado.precio.toFixed(2)}\nIVA (21%): $${resultado.iva.toFixed(2)}\nPrecio Total: $${resultado.total.toFixed(2)}`;
+            }).join('\n\n');
             historyTextContainer.innerHTML = historyText;
             showOverlay(historyOverlay, historyPopup);
+        }
+    }
+
+    function showCustomResultsList() {
+        if (resultsArray.length === 0) {
+            showAlert("Historial de Resultados vacío.");
+        } else {
+            const select = document.createElement("select");
+            select.setAttribute("id", "customResultsSelect");
+
+            resultsArray.forEach((resultado, index) => {
+                const option = document.createElement("option");
+                option.text = `Resultado ${index + 1}`;
+                select.add(option);
+            });
+
+            const confirmButton = document.createElement("button");
+            confirmButton.textContent = "Confirmar";
+            confirmButton.addEventListener("click", function () {
+                const selectedIndex = select.selectedIndex;
+                const selectedResult = resultsArray[selectedIndex];
+                const totalCustom = selectedResult.total;
+                const totalAll = total + totalCustom;
+
+                showAlert(`Precio Total de Todos los Resultados (incluido el personalizado): $${totalAll.toFixed(2)}`);
+                hideOverlay(customResultsOverlay);
+            });
+
+            customResultsPopup.innerHTML = "";
+            customResultsPopup.appendChild(select);
+            customResultsPopup.appendChild(confirmButton);
+
+            showOverlay(customResultsOverlay, customResultsPopup);
         }
     }
 
@@ -111,14 +156,11 @@ document.addEventListener("DOMContentLoaded", function () {
         overlay.style.display = "none";
     }
 
-   
     function saveResultsToStorage() {
-      
-        const limitedResults = resultsArray.slice(-10);
+        const limitedResults = resultsArray.slice(-maxResults);
         localStorage.setItem('resultsArray', JSON.stringify(limitedResults));
     }
 
-    
     function loadResultsFromStorage() {
         const storedResults = localStorage.getItem('resultsArray');
         if (storedResults) {
