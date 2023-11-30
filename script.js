@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     const calculateButton = document.getElementById("calculateButton");
     const priceInput = document.getElementById("price");
     const priceDisplay = document.getElementById("priceDisplay");
@@ -17,9 +17,9 @@ document.addEventListener("DOMContentLoaded", function() {
     const tasaIVA = 0.21;
     let total = 0;
     const maxResults = 20;
-    const resultsArray = [];
+    let resultsArray = loadResultsFromStorage();
 
-    calculateButton.addEventListener("click", function() {
+    calculateButton.addEventListener("click", function () {
         const precio = parseFloat(priceInput.value);
 
         if (isNaN(precio)) {
@@ -40,6 +40,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 resultsArray.shift();
             }
 
+         
+            saveResultsToStorage();
+
             resultValue.textContent = `IVA (21%): $${montoIVA.toFixed(2)}\nPrecio Total: $${precioTotal.toFixed(2)}`;
             userPriceValue.textContent = `$${precio.toFixed(2)}`;
 
@@ -50,24 +53,25 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    resetButton.addEventListener("click", function() {
+    resetButton.addEventListener("click", function () {
         resultValue.textContent = '';
         total = 0;
     });
 
-    sumButton.addEventListener("click", function() {
+    sumButton.addEventListener("click", function () {
         showAlert(`Precio Total de Todos los Resultados: $${total.toFixed(2)}`);
     });
 
-    historyButton.addEventListener("click", function() {
+    historyButton.addEventListener("click", function () {
+        resultsArray = loadResultsFromStorage(); 
         showHistory();
     });
 
-    validValueButton.addEventListener("click", function() {
+    validValueButton.addEventListener("click", function () {
         hideOverlay(alertOverlay);
     });
 
-    closeHistoryButton.addEventListener("click", function() {
+    closeHistoryButton.addEventListener("click", function () {
         hideOverlay(historyOverlay);
     });
 
@@ -76,8 +80,8 @@ document.addEventListener("DOMContentLoaded", function() {
             showAlert("Historial de Resultados vacío.");
         } else {
             const historyText = resultsArray.map((resultado, index) => {
-                return `Resultado ${index + 1}:\nPrecio: $${resultado.precio.toFixed(2)}\nIVA (21%): $${resultado.iva.toFixed(2)}\nPrecio Total: $${resultado.total.toFixed(2)}`;
-            }).join('\n\n');
+                return `Resultado ${index + 1}:<br>Precio: $${resultado.precio.toFixed(2)}<br>IVA (21%): $${resultado.iva.toFixed(2)}<br>Precio Total: $${resultado.total.toFixed(2)}`;
+            }).join('<br><br>');
             historyTextContainer.innerHTML = historyText;
             showOverlay(historyOverlay, historyPopup);
         }
@@ -105,5 +109,22 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function hideOverlay(overlay) {
         overlay.style.display = "none";
+    }
+
+   
+    function saveResultsToStorage() {
+      
+        const limitedResults = resultsArray.slice(-10);
+        localStorage.setItem('resultsArray', JSON.stringify(limitedResults));
+    }
+
+    
+    function loadResultsFromStorage() {
+        const storedResults = localStorage.getItem('resultsArray');
+        if (storedResults) {
+            return JSON.parse(storedResults);
+        } else {
+            return [];
+        }
     }
 });
